@@ -12,6 +12,9 @@ export default {
     store() {
       return useLedger();
     },
+    myNickname() {
+      return uni.getStorageSync('nickname') || '';
+    },
     // 本月收入/支出/结余（分）
     monthStat() {
       const m = thisMonth();
@@ -101,7 +104,10 @@ export default {
         @longpress="confirmDelete(r)"
       >
         <view class="row-left">
-          <text class="row-cat">{{ r.category }}</text>
+          <view class="row-cat-line">
+            <text class="row-cat">{{ r.category }}</text>
+            <text v-if="r.recorderName && r.recorderName !== myNickname" class="recorder">{{ r.recorderName }}</text>
+          </view>
           <text v-if="r.note" class="row-note">{{ r.note }}</text>
         </view>
         <text :class="['row-amt', r.type === 2 ? 'inc' : 'exp']">
@@ -143,7 +149,9 @@ export default {
   background: #2c2c2e; border-radius: 14rpx; padding: 26rpx 24rpx; margin-bottom: 12rpx;
 }
 .row-left { display: flex; flex-direction: column; }
+.row-cat-line { display: flex; align-items: center; gap: 12rpx; }
 .row-cat { color: #f2f2f7; font-size: 32rpx; }
+.recorder { color: #d4af37; font-size: 20rpx; background: #1c1c1e; padding: 2rpx 14rpx; border-radius: 999rpx; }
 .row-note { color: #8e8e93; font-size: 24rpx; margin-top: 6rpx; }
 .row-amt { font-size: 34rpx; font-weight: 600; }
 .row-amt.inc { color: #34c759; }
