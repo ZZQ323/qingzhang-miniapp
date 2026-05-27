@@ -97,6 +97,16 @@ export const useLedger = defineStore('ledger', {
     async init() {
       await this.syncPush();
       await this.syncPull();
+    },
+
+    // 切换账本后：本地缓存属于旧账本，需清空并全量重拉
+    async resetAndReload() {
+      this.records = [];
+      this.queue = [];
+      this.since = '';
+      uni.removeStorageSync(LS_SINCE);
+      this.persist();
+      await this.syncPull();
     }
   }
 });

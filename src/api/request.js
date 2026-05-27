@@ -30,5 +30,6 @@ function request(opt) {
 export const api = {
   login: (code) => request({ url: '/api/auth/login', method: 'POST', data: { code } }),
   pull: (since) => request({ url: '/api/sync/pull' + (since ? '?since=' + encodeURIComponent(since) : '') }),
-  push: (records) => request({ url: '/api/sync/push', method: 'POST', data: { records } })
+  push: (records) => request({ url: '/api/sync/push', method: 'POST', data: { records } }),
+  joinBook: (bookId) => request({ url: '/api/book/join', method: 'POST', data: { bookId } })
 };
