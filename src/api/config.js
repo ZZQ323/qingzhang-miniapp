@@ -5,13 +5,14 @@
 //   - 微信开发者工具：需用本机局域网 IP（并在工具里勾选「不校验合法域名」）
 const DEV_BASE = (() => {
   // #ifdef H5
-  return 'http://localhost:8080';
+  return 'http://192.168.3.35:8080';
   // #endif
   // #ifndef H5
   return 'http://127.0.0.1:8080'; // 真机调试请改成本机局域网 IP，如 http://192.168.1.10:8080
   // #endif
 })();
 
-const PROD_BASE = 'https://api.yourdomain.com'; // TODO: 换成你的正式后端域名
+// TODO: 换成你的正式后端域名
+const PROD_BASE = 'https://zzq323.top'; 
 
 export const BASE = process.env.NODE_ENV === 'development' ? DEV_BASE : PROD_BASE;
