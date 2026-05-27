@@ -1,5 +1,5 @@
 // 统一请求封装：自动带 token，401 自动跳登录
-const BASE = 'https://api.yourdomain.com'; // 换成你的后端域名
+import { BASE } from './config';
 
 function request(opt) {
   const token = uni.getStorageSync('token');
