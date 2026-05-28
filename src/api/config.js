@@ -5,15 +5,15 @@
 //   - 微信开发者工具：需用本机局域网 IP（并在工具里勾选「不校验合法域名」）
 const DEV_BASE = (() => {
   // #ifdef H5
-  return 'https://zzq323.top/bookkeeping';
+  return 'http://localhost:8080'; // H5 浏览器调试连本地后端（配 DEV_MODE=1）
   // #endif
   // #ifndef H5
-  return 'https://zzq323.top/bookkeeping'; 
-  // 真机调试请改成本机局域网 IP，如 http://192.168.1.10:8080
+  // 小程序（开发者工具/真机）走 https + Nginx 的 /bookkeeping 前缀，
+  // 与微信后台 request 合法域名 https://zzq323.top 一致，否则请求被拦/超时
+  return 'https://zzq323.top/bookkeeping';
   // #endif
 })();
 
-// TODO: 换成你的正式后端域名
-const PROD_BASE = 'https://zzq323.top/bookkeeping'; 
+const PROD_BASE = 'https://zzq323.top/bookkeeping';
 
 export const BASE = process.env.NODE_ENV === 'development' ? DEV_BASE : PROD_BASE;
