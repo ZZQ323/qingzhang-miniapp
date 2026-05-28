@@ -55,6 +55,9 @@ export const api = {
   pull: (since) => request({ url: '/api/sync/pull' + (since ? '?since=' + encodeURIComponent(since) : ''), silent: true }),
   push: (records) => request({ url: '/api/sync/push', method: 'POST', data: { records }, silent: true }),
   joinBook: (bookId) => request({ url: '/api/book/join', method: 'POST', data: { bookId } }),
+  listBooks: () => request({ url: '/api/books' }),
+  createBook: (name) => request({ url: '/api/books', method: 'POST', data: { name } }),
+  switchBook: (bookId) => request({ url: '/api/books/switch', method: 'POST', data: { bookId } }),
   // content 为文件字节的 base64（保留支付宝 GBK 原样）
   importBill: (source, content) => request({ url: '/api/import', method: 'POST', data: { source, content } })
 };

@@ -50,6 +50,9 @@ export default {
     goImport() {
       uni.navigateTo({ url: '/pages/import/import' });
     },
+    goBooks() {
+      uni.navigateTo({ url: '/pages/books/books' });
+    },
     sync() {
       this.store.init();
       uni.showToast({ title: '已同步', icon: 'success' });
@@ -124,9 +127,9 @@ export default {
     <template v-if="logged">
     <view class="block">
       <text class="block-title">账本设置</text>
-      <view class="cell" @tap="copyCode">
-        <text>我的邀请码</text>
-        <text class="code">{{ profile.bookId || '-' }} ⧉</text>
+      <view class="cell" @tap="goBooks">
+        <text>账本管理 / 切换</text>
+        <text class="arrow">›</text>
       </view>
       <view class="cell">
         <text>加入账本</text>
@@ -135,7 +138,7 @@ export default {
           <text class="join-btn" @tap="join">加入</text>
         </view>
       </view>
-      <text class="tip">把邀请码发给好友，对方输入后即可共记一个账本</text>
+      <text class="tip">在「账本管理」里新建账本、切换、查看各自邀请码</text>
     </view>
 
     <view class="block">
