@@ -17,13 +17,21 @@ export function logout() {
   ['token', 'userId', 'nickname', 'bookId'].forEach((k) => uni.removeStorageSync(k));
 }
 
-// 冷启动静默登录：已有 token 直接返回；否则换 code 登录
-export async function silentLogin() {
-  if (getToken()) return getProfile();
+export function isLoggedIn() {
+  return !!getToken();
+}
 
+// 手动登录：用户点击触发。各步骤抛出可读错误，调用方负责展示。
+export async function login() {
   let code = '';
   // #ifdef MP-WEIXIN
-  const res = await uni.login({ provider: 'weixin' });
+  let res;
+  try {
+    res = await uni.login({ provider: 'weixin' });
+  } catch (e) {
+    throw new Error('微信授权失败，请重试');
+  }
+  if (!res || !res.code) throw new Error('未获取到微信登录凭证');
   code = res.code;
   // #endif
   // #ifndef MP-WEIXIN
@@ -31,6 +39,7 @@ export async function silentLogin() {
   code = 'dev_' + (uni.getStorageSync('devCode') || 'h5');
   // #endif
 
+  // api.login 为 silent，错误在此处统一抛出（带后端 msg）
   const data = await api.login(code);
   uni.setStorageSync('token', data.token);
   uni.setStorageSync('userId', data.userId);

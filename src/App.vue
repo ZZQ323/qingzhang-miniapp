@@ -1,21 +1,15 @@
 <script>
-import { silentLogin } from '@/api/auth';
+import { isLoggedIn } from '@/api/auth';
 import { useLedger } from '@/store/ledger';
 
 export default {
-  async onLaunch() {
-    const ledger = useLedger();
-    try {
-      await silentLogin();        // 静默登录，token 持久化
-    } catch (e) {
-      // 登录失败（无网/后端未起）静默容错，离线仍可记账，联网后自动补登
-      console.warn('silentLogin failed:', e);
-    }
-    await ledger.init();          // 先推待发队列，再拉增量
+  onLaunch() {
+    // 登录改为「我的」页手动点击触发，不再静默登录。
+    // 已登录则启动时同步一次；未登录不打扰，离线仍可本地记账。
+    if (isLoggedIn()) useLedger().init();
   },
   onShow() {
-    // 回到前台时补一次同步
-    useLedger().init();
+    if (isLoggedIn()) useLedger().init();
   }
 };
 </script>
