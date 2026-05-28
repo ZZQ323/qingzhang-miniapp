@@ -99,6 +99,15 @@ export const useLedger = defineStore('ledger', {
       await this.syncPull();
     },
 
+    // 退出登录：仅清空本地缓存，不联网
+    resetLocal() {
+      this.records = [];
+      this.queue = [];
+      this.since = '';
+      uni.removeStorageSync(LS_SINCE);
+      this.persist();
+    },
+
     // 切换账本后：本地缓存属于旧账本，需清空并全量重拉
     async resetAndReload() {
       this.records = [];
