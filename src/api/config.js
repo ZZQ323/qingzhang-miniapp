@@ -5,10 +5,11 @@
 //   - 微信开发者工具：需用本机局域网 IP（并在工具里勾选「不校验合法域名」）
 const DEV_BASE = (() => {
   // #ifdef H5
-  return 'http://zzq323.top:8080';
+  return 'https://zzq323.top/bookkeeping';
   // #endif
   // #ifndef H5
-  return 'http://zzq323.top:8080'; // 真机调试请改成本机局域网 IP，如 http://192.168.1.10:8080
+  return 'https://zzq323.top/bookkeeping'; 
+  // 真机调试请改成本机局域网 IP，如 http://192.168.1.10:8080
   // #endif
 })();
 
