@@ -1,6 +1,6 @@
 <script>
 import { useLedger } from '@/store/ledger';
-import { categoriesOf } from '@/utils/categories';
+import { categoriesOf, addCustomCategory } from '@/utils/categories';
 import { yuanToFen, fenToYuan, todayStr } from '@/utils/format';
 
 function blankForm() {
@@ -25,10 +25,11 @@ export default {
   },
   emits: ['close'],
   data() {
-    return { form: blankForm() };
+    return { form: blankForm(), catVersion: 0 };
   },
   computed: {
     categories() {
+      this.catVersion; // 触发依赖，自定义类别新增后重算
       return categoriesOf(this.form.type);
     },
     isEdit() {
@@ -67,6 +68,40 @@ export default {
     },
     close() {
       this.$emit('close');
+    },
+    // 自定义类别：弹出可输入对话框，新增后选中
+    addCustom() {
+      uni.showModal({
+        title: '新增类别',
+        editable: true,
+        placeholderText: '输入类别名称',
+        success: (res) => {
+          if (!res.confirm) return;
+          const name = (res.content || '').trim();
+          if (!name) return;
+          if (addCustomCategory(this.form.type, name)) {
+            this.catVersion++;
+            this.form.category = name;
+          } else {
+            this.form.category = name; // 已存在则直接选中
+            uni.showToast({ title: '该类别已存在', icon: 'none' });
+          }
+        }
+      });
+    },
+    // 编辑模式下删除当前记录
+    del() {
+      uni.showModal({
+        title: '删除记录',
+        content: '确定删除这笔记录？',
+        confirmColor: '#ff6b6b',
+        success: (res) => {
+          if (!res.confirm) return;
+          useLedger().remove(this.form.id);
+          uni.showToast({ title: '已删除', icon: 'none' });
+          this.close();
+        }
+      });
     },
     save() {
       const fen = yuanToFen(this.form.amountInput);
@@ -129,6 +164,7 @@ export default {
           :class="['cat', form.category === c && 'cat-on']"
           @tap="form.category = c"
         >{{ c }}</view>
+        <view class="cat cat-add" @tap="addCustom">＋ 自定义</view>
       </view>
 
       <!-- 其它字段 -->
@@ -152,6 +188,7 @@ export default {
       </view>
 
       <button class="save-btn" @tap="save">{{ isEdit ? '保存修改' : '记一笔' }}</button>
+      <button v-if="isEdit" class="del-btn" @tap="del">删除这笔</button>
     </view>
   </view>
 </template>
@@ -192,6 +229,7 @@ export default {
   padding: 12rpx 28rpx; background: #1c1c1e; border-radius: 999rpx; color: #aeaeb2; font-size: 28rpx;
 }
 .cat-on { background: #d4af37; color: #1c1c1e; font-weight: 600; }
+.cat-add { color: #d4af37; border: 1rpx dashed #d4af37; background: transparent; }
 .field {
   display: flex; align-items: center; justify-content: space-between;
   padding: 22rpx 0; border-top: 1rpx solid #3a3a3c;
@@ -202,5 +240,9 @@ export default {
 .save-btn {
   margin-top: 32rpx; background: #d4af37; color: #1c1c1e; font-weight: 600;
   border-radius: 14rpx; font-size: 32rpx;
+}
+.del-btn {
+  margin-top: 16rpx; background: transparent; color: #ff6b6b;
+  border: 1rpx solid #ff6b6b; border-radius: 14rpx; font-size: 30rpx;
 }
 </style>
