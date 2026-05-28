@@ -47,6 +47,9 @@ export default {
         this.logging = false;
       }
     },
+    goImport() {
+      uni.navigateTo({ url: '/pages/import/import' });
+    },
     sync() {
       this.store.init();
       uni.showToast({ title: '已同步', icon: 'success' });
@@ -136,6 +139,10 @@ export default {
     </view>
 
     <view class="block">
+      <view class="cell" @tap="goImport">
+        <text>导入账单（微信/支付宝）</text>
+        <text class="arrow">›</text>
+      </view>
       <view class="cell" @tap="doExport">
         <text>导出 CSV</text>
         <text class="arrow">›</text>
