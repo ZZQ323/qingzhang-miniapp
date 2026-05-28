@@ -1,5 +1,5 @@
 <script>
-import { getProfile, logout } from '@/api/auth';
+import { getProfile, logout, login, isLoggedIn } from '@/api/auth';
 import { api } from '@/api/request';
 import { useLedger } from '@/store/ledger';
 import { exportCsv } from '@/utils/csv';
@@ -8,11 +8,14 @@ export default {
   data() {
     return {
       profile: { nickname: '', userId: '', bookId: '' },
-      joinCode: ''
+      joinCode: '',
+      logged: false,
+      logging: false
     };
   },
   onShow() {
     this.profile = getProfile();
+    this.logged = isLoggedIn();
   },
   computed: {
     store() {
@@ -20,6 +23,30 @@ export default {
     }
   },
   methods: {
+    async doLogin() {
+      if (this.logging) return;
+      this.logging = true;
+      uni.showLoading({ title: '登录中...', mask: true });
+      try {
+        await login();
+        this.profile = getProfile();
+        this.logged = true;
+        uni.hideLoading();
+        uni.showToast({ title: '登录成功', icon: 'success' });
+        await this.store.init();
+      } catch (e) {
+        uni.hideLoading();
+        // 登录失败给出明确原因 + 可重试，而非静默
+        uni.showModal({
+          title: '登录失败',
+          content: e.message || '未知错误，请重试',
+          showCancel: false,
+          confirmText: '知道了'
+        });
+      } finally {
+        this.logging = false;
+      }
+    },
     sync() {
       this.store.init();
       uni.showToast({ title: '已同步', icon: 'success' });
@@ -79,11 +106,15 @@ export default {
 <template>
   <view class="page">
     <view class="card">
-      <text class="nick">{{ profile.nickname || '未登录' }}</text>
-      <text class="sub">当前账本：{{ profile.bookId || '-' }}</text>
+      <text class="nick">{{ logged ? (profile.nickname || '微信用户') : '未登录' }}</text>
+      <text class="sub">{{ logged ? '当前账本：' + (profile.bookId || '-') : '登录后多设备同步、可与好友共记账本' }}</text>
+      <view v-if="!logged" class="login-btn" :class="{ disabled: logging }" @tap="doLogin">
+        {{ logging ? '登录中...' : '微信登录' }}
+      </view>
     </view>
 
-    <!-- 账本设置 -->
+    <!-- 账本设置（登录后才显示） -->
+    <template v-if="logged">
     <view class="block">
       <text class="block-title">账本设置</text>
       <view class="cell" @tap="copyCode">
@@ -114,6 +145,7 @@ export default {
         <text class="arrow">›</text>
       </view>
     </view>
+    </template>
   </view>
 </template>
 
@@ -126,6 +158,12 @@ export default {
 }
 .nick { color: #f2f2f7; font-size: 40rpx; font-weight: 600; }
 .sub { color: #8e8e93; font-size: 26rpx; margin-top: 12rpx; }
+.login-btn {
+  margin-top: 32rpx; align-self: flex-start;
+  background: #d4af37; color: #1c1c1e; font-size: 30rpx; font-weight: 600;
+  padding: 18rpx 56rpx; border-radius: 999rpx;
+}
+.login-btn.disabled { opacity: 0.6; }
 .block { background: #2c2c2e; border-radius: 16rpx; overflow: hidden; margin-bottom: 32rpx; }
 .block-title { display: block; color: #8e8e93; font-size: 24rpx; padding: 24rpx 28rpx 0; }
 .cell {
