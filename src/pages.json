@@ -26,6 +26,15 @@
         "navigationBarTextStyle": "white",
         "backgroundColor": "#1c1c1e"
       }
+    },
+    {
+      "path": "pages/import/import",
+      "style": {
+        "navigationBarTitleText": "导入账单",
+        "navigationBarBackgroundColor": "#1c1c1e",
+        "navigationBarTextStyle": "white",
+        "backgroundColor": "#1c1c1e"
+      }
     }
   ],
   "globalStyle": {
