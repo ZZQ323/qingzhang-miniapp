@@ -94,6 +94,10 @@ export default {
           if (res.confirm) {
             logout();
             this.profile = getProfile();
+            this.logged = false;
+            this.joinCode = '';
+            // 清空本地账本数据，避免残留上一个账号的记录
+            this.store.resetLocal();
             uni.showToast({ title: '已退出', icon: 'none' });
           }
         }
